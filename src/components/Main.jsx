@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 
 import Options from './Options'
 import Button from './Button'
-import { readFile, makeTLEexplain, convertFuncCartesian, convertFuncKepler, convertSGP4, returnFunctionByOption } from './main.js';
+import { readFile, returnFunctionByOption } from './main.js';
 import TLEexplain from './results/TLEexplain';
+import Kepler from './results/kepler';
+import Config from '../config.json';
 
 
 const Main = props => {
@@ -17,7 +19,7 @@ const Main = props => {
   const convertFunc = () => {
     toggleShowObject(true);
     if (choosenOption == null) alert("יש לבחור פונקציונליות");
-    else setResultData(returnFunctionByOption(choosenOption)(tleContent));
+    else setResultData(returnFunctionByOption(choosenOption)(tleContent, Config));
   }
   const handleChooseOption = (option) => {
     changeChoosenOption(option);
@@ -31,7 +33,8 @@ const Main = props => {
     <textarea id="textTLE" rows="4" placeholder="insert your TLE here" value={tleContent} onChange={handleTextareaChange} />
     <input className="uploadTLE" type="file" name="file" accept=".txt" onChange={(e) => readFile(e, setTLEcontent)} />
     <Button convertFunc={convertFunc} />
-    {choosenOption == "TLE" && showObject && <TLEexplain exit={() => toggleShowObject(false)} resultData={resultData} />}
+    {choosenOption === "TLE" && showObject && <TLEexplain resultData={resultData} exit={() => toggleShowObject(false)} />}
+    {choosenOption === "Keplarian" && showObject && <Kepler resultData={resultData} exit={() => toggleShowObject(false)} />}
   </div>
 }
 

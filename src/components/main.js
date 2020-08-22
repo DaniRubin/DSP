@@ -1,13 +1,5 @@
 
-exports.readFile = async (e, changeTLEcontent) => {
-  const reader = new FileReader()
-  reader.onload = async (e) => {
-    const text = (e.target.result)
-    changeTLEcontent(text);
-  };
-  reader.readAsText(e.target.files[0])
-}
-exports.makeTLEexplain = (tle) => {
+const makeTLEexplain = (tle) => {
   const answer = getDATAandSplit(tle);
   const tleObject = {};
   tleObject.firstLine = splitFirstLine(answer.firstLine);
@@ -16,22 +8,44 @@ exports.makeTLEexplain = (tle) => {
   return tleObject;
 }
 
-exports.convertFuncCartesian = () => {
+const convertFuncKepler = (tle, Config) => {
+  const answer = getDATAandSplit(tle);
+  const keplerObject = {};
+  const meanMotion = parseFloat(answer.secondLine.slice(52, 63));
+  const meanAnomaly = parseFloat(answer.secondLine.slice(43, 51));
+  const meanMotionRadian = (Math.PI * 2 * meanMotion) / 86400;
+  const semiMajorAxis = Math.pow(Config.gravitaionalConstentEarth / Math.pow(meanMotionRadian, 2), 1 / 3).toFixed(3);
+  const Eccentricity = parseFloat("0." + answer.secondLine.slice(26, 33));
+  keplerObject["A - Semi major axis"] = semiMajorAxis;
+  keplerObject["E - Eccentricity"] = Eccentricity;
+  keplerObject["I - Inclination"] = parseFloat(answer.secondLine.slice(8, 16));
+  keplerObject["Ω - Angle to ascending node	"] = parseFloat(answer.secondLine.slice(17, 25));
+  keplerObject["ω - Argument of Perigee	"] = parseFloat(answer.secondLine.slice(34, 42));
+  keplerObject["ν - True anomaly"] = getTrueAnamoly(Eccentricity, meanAnomaly, 14);
+  console.log(keplerObject);
+  return keplerObject;
+}
+
+const convertFuncCartesian = () => {
 
 }
-exports.convertFuncKepler = () => {
-
-}
-exports.convertSGP4 = () => {
+const convertSGP4 = () => {
 
 }
 exports.returnFunctionByOption = (choosenOption) => {
-  if (choosenOption === "TLE") return this.makeTLEexplain;
-  if (choosenOption === "Cartesian") return this.convertFuncCartesian;
-  if (choosenOption === "Keplarian") return this.convertFuncKepler
-  if (choosenOption === "SGP4") return this.convertSGP4;
+  if (choosenOption === "TLE") return makeTLEexplain;
+  if (choosenOption === "Cartesian") return convertFuncCartesian;
+  if (choosenOption === "Keplarian") return convertFuncKepler
+  if (choosenOption === "SGP4") return convertSGP4;
 }
-
+exports.readFile = async (e, changeTLEcontent) => {
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    const text = (e.target.result)
+    changeTLEcontent(text);
+  };
+  reader.readAsText(e.target.files[0])
+}
 
 
 
@@ -83,4 +97,34 @@ function getDATAandSplit(data) {
     }
     return results;
   }
+}
+function degreeToRadians(degree) {
+  return degree / 57.2958;
+}
+function radianToDegree(radian) {
+  return radian * 57.2958;
+}
+
+function getTrueAnamoly(Eccentricity, meanAnomaly, dp) {
+  let i = 0;
+  let maxIter = 30;
+  let delta = Math.pow(10, -dp);
+  meanAnomaly = meanAnomaly % 360;
+  meanAnomaly = (meanAnomaly * 2.0 * Math.PI) / 360.0;
+  let eccentricAnomaly = Eccentricity < 0.8 ? meanAnomaly : Math.PI;
+  let F = eccentricAnomaly - Eccentricity * Math.sin(meanAnomaly) - meanAnomaly;
+  while (Math.abs(F) > delta && i < maxIter) {
+    eccentricAnomaly =
+      eccentricAnomaly - F / (1.0 - Eccentricity * Math.cos(eccentricAnomaly));
+    F = eccentricAnomaly - Eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly;
+    i = i + 1;
+  }
+  const eccentricAnomalyDegree = ((eccentricAnomaly * 180.0) / Math.PI).toFixed(dp);
+  const sin = Math.sin(eccentricAnomaly);
+  const cos = Math.cos(eccentricAnomaly);
+  const fak = Math.sqrt(1.0 - Math.pow(Eccentricity, 2));
+  const phi = ((Math.atan2(fak * sin, cos - Eccentricity) * 180.0) / Math.PI).toFixed(
+    4
+  );
+  return phi;
 }

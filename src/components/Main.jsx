@@ -4,8 +4,10 @@ import Options from './Options'
 import Button from './Button'
 import { readFile, returnFunctionByOption } from './main.js';
 import TLEexplain from './results/TLEexplain';
-import Kepler from './results/kepler';
+import Keplerian from './results/Keplarian';
+
 import Config from '../config.json';
+import Cartesian from './results/Cartesian';
 
 
 const Main = props => {
@@ -34,7 +36,8 @@ const Main = props => {
     <input className="uploadTLE" type="file" name="file" accept=".txt" onChange={(e) => readFile(e, setTLEcontent)} />
     <Button convertFunc={convertFunc} />
     {choosenOption === "TLE" && showObject && <TLEexplain resultData={resultData} exit={() => toggleShowObject(false)} />}
-    {choosenOption === "Keplarian" && showObject && <Kepler resultData={resultData} exit={() => toggleShowObject(false)} />}
+    {choosenOption === "Keplarian" && showObject && <Keplerian resultData={resultData} exit={() => toggleShowObject(false)} />}
+    {choosenOption === "Cartesian" && showObject && <Cartesian resultData={resultData} exit={() => toggleShowObject(false)} />}
   </div>
 }
 

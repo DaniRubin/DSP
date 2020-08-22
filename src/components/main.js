@@ -22,13 +22,84 @@ const convertFuncKepler = (tle, Config) => {
   keplerObject["Ω - Angle to ascending node	"] = parseFloat(answer.secondLine.slice(17, 25));
   keplerObject["ω - Argument of Perigee	"] = parseFloat(answer.secondLine.slice(34, 42));
   keplerObject["ν - True anomaly"] = getTrueAnamoly(Eccentricity, meanAnomaly, 14);
-  console.log(keplerObject);
   return keplerObject;
 }
 
-const convertFuncCartesian = () => {
+const convertFuncCartesian = (tle, Config) => {
+  const keplerObject = convertFuncKepler(tle, Config);
+  const cartesianObject = showCartesianData(
+    keplerObject["A - Semi major axis"],
+    keplerObject["E - Eccentricity"],
+    keplerObject["I - Inclination"],
+    keplerObject["Ω - Angle to ascending node	"],
+    keplerObject["ω - Argument of Perigee	"],
+    keplerObject["ν - True anomaly"],
+    Config.gravitaionalConstentEarth
+  );
+  console.log(cartesianObject);
+  return cartesianObject;
 
 }
+
+function showCartesianData(a, e, i, omegaBig, omegaSmall, trueAnomaly, gravitaionalConstentEarth) {
+  let LocVector = [], VelVector = [], ConversionMetrix = [], elementMatrix = [];
+  //make variebles to radians
+  const trueAnomalyR = degreeToRadians(trueAnomaly);
+  omegaBig = degreeToRadians(omegaBig);
+  omegaSmall = degreeToRadians(omegaSmall);
+  const iR = degreeToRadians(i);
+  //Location vector
+  LocVector.push((a * Math.cos(trueAnomalyR)) / (1 + e * Math.cos(trueAnomalyR)));
+  LocVector.push((a * Math.sin(trueAnomalyR)) / (1 + e * Math.cos(trueAnomalyR)));
+  LocVector.push(0);
+  console.log(LocVector);
+  //velocety vector
+  VelVector.push(-(Math.sqrt((gravitaionalConstentEarth) / a) * Math.sin(trueAnomalyR)));
+  VelVector.push(Math.sqrt((gravitaionalConstentEarth) / a) * (e + Math.cos(trueAnomalyR)));
+  VelVector.push(0);
+  console.log(VelVector);
+  //Convertion metrix
+  elementMatrix.push(Math.cos(omegaBig) * Math.cos(omegaSmall) - Math.sin(omegaBig) * Math.sin(omegaSmall) * Math.cos(iR));
+  elementMatrix.push(-(Math.cos(omegaBig) * Math.sin(omegaSmall)) - Math.sin(omegaBig) * Math.cos(omegaSmall) * Math.cos(iR));
+  elementMatrix.push(Math.sin(omegaBig) * Math.sin(iR));
+  ConversionMetrix.push(elementMatrix);
+  elementMatrix = [];
+  elementMatrix.push(
+    Math.sin(omegaBig) * Math.cos(omegaSmall) +
+    Math.cos(omegaBig) * Math.sin(omegaSmall) * Math.cos(iR)
+  );
+  elementMatrix.push(-(Math.sin(omegaBig) * Math.sin(omegaSmall)) + Math.cos(omegaBig) * Math.cos(omegaSmall) * Math.cos(iR));
+  elementMatrix.push(-(Math.cos(omegaBig) * Math.sin(iR)));
+  ConversionMetrix.push(elementMatrix);
+  elementMatrix = [];
+  elementMatrix.push(Math.sin(omegaSmall) * Math.sin(iR));
+  elementMatrix.push(Math.cos(omegaSmall) * Math.sin(iR));
+  elementMatrix.push(Math.cos(iR));
+  ConversionMetrix.push(elementMatrix);
+  console.log(ConversionMetrix);
+  elementMatrix = [];
+  console.log(ConversionMetrix);
+  LocVector = multiplieMetrix(ConversionMetrix, LocVector);
+  console.log("Final Location - " + LocVector);
+  VelVector = multiplieMetrix(ConversionMetrix, VelVector);
+  console.log("Final Velocity - " + VelVector);
+  return {
+    Location: LocVector,
+    Velocity: VelVector
+  };
+}
+
+
+
+
+
+
+
+
+
+
+
+
 const convertSGP4 = () => {
 
 }
@@ -119,7 +190,7 @@ function getTrueAnamoly(Eccentricity, meanAnomaly, dp) {
     F = eccentricAnomaly - Eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly;
     i = i + 1;
   }
-  const eccentricAnomalyDegree = ((eccentricAnomaly * 180.0) / Math.PI).toFixed(dp);
+  // const eccentricAnomalyDegree = ((eccentricAnomaly * 180.0) / Math.PI).toFixed(dp);
   const sin = Math.sin(eccentricAnomaly);
   const cos = Math.cos(eccentricAnomaly);
   const fak = Math.sqrt(1.0 - Math.pow(Eccentricity, 2));
@@ -127,4 +198,16 @@ function getTrueAnamoly(Eccentricity, meanAnomaly, dp) {
     4
   );
   return phi;
+}
+
+function multiplieMetrix(mat1, mat2) {
+  const resultMatrix = [];
+  for (let i = 0; i < mat1.length; i++) {
+    let sum = 0;
+    for (let j = 0; j < mat2.length; j++) {
+      sum += mat1[i][j] * mat2[j];
+    }
+    resultMatrix.push(sum.toFixed(8));
+  }
+  return resultMatrix;
 }

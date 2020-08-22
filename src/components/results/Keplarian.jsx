@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Kepler = props => {
+const Keplarian = props => {
 	console.log(props.resultData);
 	return <div id="KeplerStat">
-		<div id="ExitButton" onclick={props.exit}>X</div>
+		<div id="ExitButton" onClick={props.exit}>X</div>
 		<center>
 			<table style={{ width: "85%" }} cellpadding="10">
 				<thead>
@@ -25,4 +25,4 @@ const Kepler = props => {
 	</div>
 }
 
-export default Kepler;
+export default Keplarian;

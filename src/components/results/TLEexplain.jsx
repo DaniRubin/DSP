@@ -2,6 +2,7 @@ import React from 'react';
 
 
 const TLEexplain = props => {
+  console.log(props)
   return <div id="TLEprops">
     <div id="ExitButton" onClick={props.exit}>X</div>
     <div id="firstLine">
@@ -16,16 +17,15 @@ const TLEexplain = props => {
           </thead>
           <tbody>
             {Object.keys(props.resultData.firstLine).map(result => {
-              return <tr>
+              return <tr key={result}>
                 <td width="30%" className="parameter" >{props.resultData.firstLine[result]}</td>
-                <td width="70%" className="explainParam">{result}</td>
+                <td width="70%" className="explainParam">{"firstLine" + result}</td>
               </tr>
             })}
           </tbody>
         </table>
       </center>
     </div>
-    {/* <!-- second line --> */}
     <div id="SencondLine">
       <center>
         <p className="InfoTLEExplenation">Second Line</p>
@@ -38,9 +38,9 @@ const TLEexplain = props => {
           </thead>
           <tbody>
             {Object.keys(props.resultData.secondLine).map(result => {
-              return <tr>
+              return <tr key={result}>
                 <td width="30%" className="parameter" >{props.resultData.secondLine[result]}</td>
-                <td width="70%" className="explainParam">{result}</td>
+                <td width="70%" className="explainParam">{"secondLine" + result}</td>
               </tr>
             })}
           </tbody>

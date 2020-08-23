@@ -4,7 +4,7 @@ const Cartesian = props => {
   return <div id="CartesianStat">
     <div id="ExitButton" onClick={props.exit}>X</div>
     <center>
-      <table style={{ width: "85%" }} cellpadding="10">
+      <table style={{ width: "85%" }} cellPadding="10">
         <thead>
           <tr>
             <th></th>

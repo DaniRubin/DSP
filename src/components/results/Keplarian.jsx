@@ -5,7 +5,7 @@ const Keplarian = props => {
 	return <div id="KeplerStat">
 		<div id="ExitButton" onClick={props.exit}>X</div>
 		<center>
-			<table style={{ width: "85%" }} cellpadding="10">
+			<table style={{ width: "85%" }} cellPadding="10">
 				<thead>
 					<tr>
 						{Object.keys(props.resultData).map(result => {

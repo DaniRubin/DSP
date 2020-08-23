@@ -89,20 +89,10 @@ function showCartesianData(a, e, i, omegaBig, omegaSmall, trueAnomaly, gravitaio
   };
 }
 
-
-
-
-
-
-
-
-
-
-
-
 const convertSGP4 = () => {
 
 }
+
 exports.returnFunctionByOption = (choosenOption) => {
   if (choosenOption === "TLE") return makeTLEexplain;
   if (choosenOption === "Cartesian") return convertFuncCartesian;

@@ -162,10 +162,6 @@ function getDATAandSplit(data) {
 function degreeToRadians(degree) {
   return degree / 57.2958;
 }
-function radianToDegree(radian) {
-  return radian * 57.2958;
-}
-
 function getTrueAnamoly(Eccentricity, meanAnomaly, dp) {
   let i = 0;
   let maxIter = 30;

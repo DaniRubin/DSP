@@ -1,6 +1,6 @@
 // import Config from '../config.json';
 
-exports.convertCartesianToKepler = (vector, Config) => {
+exports.convertCartesianToKepler = (vector, Config, catalogNumber) => {
     // const Rvector = [6524.834, 6862.875, 6448.296];
     // const Vvector = [4.901327, 5.533756, -1.976341];
     const Rvector = [vector["Xi"], vector["Xj"], vector["Xk"]];
@@ -39,26 +39,34 @@ exports.convertCartesianToKepler = (vector, Config) => {
     console.log("trueAnomaly - " + trueAnomaly);
 
     // document.getElementById("backParams").style.display = "block";
-    const TLEsecondLine = convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantPerigee, eccentricity, trueAnomaly, Config);
+    const TLEsecondLine = convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantPerigee, eccentricity, trueAnomaly, Config, catalogNumber);
     // document.getElementById("backParams").innerHTML = TLEsecondLine;
 
-    alert(TLEsecondLine);
+    return TLEsecondLine;
 }
 
+function createValidAngle(angle) {
+    let finalAngle = angle;
+    if (finalAngle < 10) finalAngle = "   " + finalAngle;
+    else if (finalAngle > 100) finalAngle = " " + finalAngle;
+    else finalAngle = "  " + finalAngle;
+    return finalAngle;
+}
 
-
-function convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantPerigee, eccentricity, trueAnomaly, Config) {
+function convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantPerigee, eccentricity, trueAnomaly, Config, catalogNumber) {
     if (eccentricity > 1) eccentricity = 0.0007721;
     if (semiMajorAxis < 0) semiMajorAxis = - semiMajorAxis
-    const randomCatalogNumber = (Math.random() * 100000).toString().split('.')[0]
 
     let TLEsecondLine = "";
+
+
     let ecc = parseFloat(eccentricity);
-    TLEsecondLine += "2 " + randomCatalogNumber + " " + inclination.toFixed(4) + " " + ascendingNode.toFixed(4) + " ";
+    TLEsecondLine += "2 " + catalogNumber + createValidAngle(inclination.toFixed(4))
+    TLEsecondLine += createValidAngle(ascendingNode.toFixed(4)) + " ";
     //make eccentricity part
     // eccentricity = eccentricity * Math.pow(10, eccentricity.toString().length - 2);
     // eccentricity = eccentricity.toString().length >= 7 ? eccentricity : new Array(7 - eccentricity.toString().length + 1).join("0") + eccentricity;
-    TLEsecondLine += eccentricity.toFixed(7).toString().split('.')[1] + "  " + argumantPerigee.toFixed(4) + " ";
+    TLEsecondLine += eccentricity.toFixed(7).toString().split('.')[1] + createValidAngle(argumantPerigee.toFixed(4));
 
     // alert(degreeToRadians(trueAnomaly))
     //make the mean anomaly?
@@ -71,7 +79,7 @@ function convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantP
     if (trueAnomaly < 0) meanAnomaly = 360 - meanAnomaly;
     console.log("mean anomaly - " + trueAnomaly);
 
-    TLEsecondLine += meanAnomaly.toFixed(4) + " ";
+    TLEsecondLine += createValidAngle(meanAnomaly.toFixed(4)) + " ";
     //make meanMotion
     let meanMotion =
         (86400 / (2 * Math.PI)) *
@@ -109,17 +117,6 @@ function vectoricalMultiple(mat1, mat2) {
 }
 function multipleScalarAndVector(mat, scalar) {
     return [mat[0] * scalar, mat[1] * scalar, mat[2] * scalar];
-}
-function multiplieMetrix(mat1, mat2) {
-    const resultMatrix = [];
-    for (let i = 0; i < mat1.length; i++) {
-        let sum = 0;
-        for (let j = 0; j < mat2.length; j++) {
-            sum += mat1[i][j] * mat2[j];
-        }
-        resultMatrix.push(sum.toFixed(8));
-    }
-    return resultMatrix;
 }
 function scalaricMultiple(mat1, mat2) {
     return (mat1[0] * mat2[0]) + (mat1[1] * mat2[1]) + (mat1[2] * mat2[2])

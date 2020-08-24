@@ -17,9 +17,9 @@ const TLEexplain = props => {
           </thead>
           <tbody>
             {Object.keys(props.resultData.firstLine).map(result => {
-              return <tr key={result}>
+              return <tr key={"firstLine" + result}>
                 <td width="30%" className="parameter" >{props.resultData.firstLine[result]}</td>
-                <td width="70%" className="explainParam">{"firstLine" + result}</td>
+                <td width="70%" className="explainParam">{result}</td>
               </tr>
             })}
           </tbody>
@@ -38,9 +38,9 @@ const TLEexplain = props => {
           </thead>
           <tbody>
             {Object.keys(props.resultData.secondLine).map(result => {
-              return <tr key={result}>
+              return <tr key={"secondLine" + result}>
                 <td width="30%" className="parameter" >{props.resultData.secondLine[result]}</td>
-                <td width="70%" className="explainParam">{"secondLine" + result}</td>
+                <td width="70%" className="explainParam">{result}</td>
               </tr>
             })}
           </tbody>

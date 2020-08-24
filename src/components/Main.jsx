@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 
 import Options from './Options'
 import Basic from './Basic.jsx';
-import SGP4 from './SGP4';
+import SGP4 from './SGP4.jsx';
 
 const Main = props => {
-  const [choosenOption, changeChoosenOption] = useState(null);
+  const [choosenOption, changeChoosenOption] = useState("SGP4");
   const [showObject, toggleShowObject] = useState(false);
 
   const handleChooseOption = (option) => {

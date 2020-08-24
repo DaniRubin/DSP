@@ -5,5 +5,13 @@
         "Cartesian",
         "SGP4"
     ],
-    "gravitaionalConstentEarth": 398600.4418
+    "gravitaionalConstentEarth": 398600.4418,
+    "cartesianValues": [
+        "Xi",
+        "Xj",
+        "Xk",
+        "Yi",
+        "Yj",
+        "Yk"
+    ]
 }

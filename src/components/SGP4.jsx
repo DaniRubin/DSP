@@ -84,27 +84,29 @@ const SGP4 = props => {
     const issSatRec = SGP.twoline2rv(newTLE.split('\n')[0], newTLE.split('\n')[1], SGP.wgs84());
     console.log(issSatRec)
     var now = new Date().getTime();
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    if (positionAndVelocity === false) return;
-    theNewVector['0 passes'] = positionAndVelocity;
-    now += 90 * 60 * 60 * 1000;
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    theNewVector['1 passes'] = positionAndVelocity;
-    now += 90 * 60 * 60 * 1000;
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    theNewVector['2 passes'] = positionAndVelocity;
-    now += 90 * 60 * 60 * 1000;
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    theNewVector['3 passes'] = positionAndVelocity;
-    now += 90 * 60 * 60 * 1000;
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    theNewVector['4 passes'] = positionAndVelocity;
-    now += 90 * 60 * 60 * 1000;
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    theNewVector['5 passes'] = positionAndVelocity;
-    now += 90 * 60 * 60 * 1000;
-    positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
-    theNewVector['6 passes'] = positionAndVelocity;
+    for (let i = 0; i < 6; i++) {
+      positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+      if (positionAndVelocity === false) return;
+      theNewVector[`${new Date(now).toLocaleDateString()} ${new Date(now).toLocaleTimeString()}`] = positionAndVelocity;
+      now += 90 * 60 * 1000;
+    }
+    // positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+    // theNewVector['1 passes'] = positionAndVelocity;
+    // now += 90 * 60 * 60 * 1000;
+    // positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+    // theNewVector['2 passes'] = positionAndVelocity;
+    // now += 90 * 60 * 60 * 1000;
+    // positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+    // theNewVector['3 passes'] = positionAndVelocity;
+    // now += 90 * 60 * 60 * 1000;
+    // positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+    // theNewVector['4 passes'] = positionAndVelocity;
+    // now += 90 * 60 * 60 * 1000;
+    // positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+    // theNewVector['5 passes'] = positionAndVelocity;
+    // now += 90 * 60 * 60 * 1000;
+    // positionAndVelocity = returnNewVectorFromPrediction(issSatRec, now);
+    // theNewVector['6 passes'] = positionAndVelocity;
     console.log(theNewVector)
     setNewVector(theNewVector);
   }

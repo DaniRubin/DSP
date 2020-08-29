@@ -1,10 +1,30 @@
-// import Config from '../config.json';
+exports.predictByVector = (vector, tle, time, SGP, Config) => {
+    const TLEsecondLine = this.convertCartesianToKepler(vector, Config, tle.split('\n')[1].split(' ')[1]);
+    const allTLE = tle.split('\n')[0] + '\n' + TLEsecondLine;
+    const issSatRec = SGP.twoline2rv(allTLE.split('\n')[0], allTLE.split('\n')[1], SGP.wgs84());
+    time = new Date(time);
+    const positionAndVelocity = SGP.propogate(issSatRec, time.getUTCFullYear(), time.getUTCMonth() + 1, time.getUTCDate(), time.getUTCHours(), time.getUTCMinutes(), time.getUTCSeconds());
+    if (positionAndVelocity[0] !== false) {
+        const newVector = {
+            "Ri": positionAndVelocity.position.x,
+            "Rj": positionAndVelocity.position.y,
+            "Rk": positionAndVelocity.position.z,
+            "Vi": positionAndVelocity.velocity.x,
+            "Vj": positionAndVelocity.velocity.y,
+            "Vk": positionAndVelocity.velocity.z
+        }
+        return newVector;
+    } else {
+        alert("Failed");
+        return false;
+    }
+};
 
 exports.convertCartesianToKepler = (vector, Config, catalogNumber) => {
     // const Rvector = [6524.834, 6862.875, 6448.296];
     // const Vvector = [4.901327, 5.533756, -1.976341];
-    const Rvector = [vector["Xi"], vector["Xj"], vector["Xk"]];
-    const Vvector = [vector["Yi"], vector["Yj"], vector["Yk"]];
+    const Rvector = [vector["Ri"], vector["Rj"], vector["Rk"]];
+    const Vvector = [vector["Vi"], vector["Vj"], vector["Vk"]];
     const Hvector = vectoricalMultiple(Rvector, Vvector);
     const Nvector = vectoricalMultiple([0, 0, 1], Hvector);
     //inclination

@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 const Header = (props) => {
     return <header >
         <img src={props.logo} className="App-logo" alt="logo" />

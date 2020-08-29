@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { readFile, returnFunctionByOption } from './main.js';
+import { readFile, returnFunctionByOption } from './js/main.js';
 import Button from './UI/Button'
 import Config from '../config.json';
 import Results from './results/Results.jsx';

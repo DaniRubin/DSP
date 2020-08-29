@@ -3,15 +3,17 @@
         "TLE",
         "Keplarian",
         "Cartesian",
-        "SGP4"
+        "SGP4",
+        "Predict"
     ],
+    "defultFunction": "Predict",
     "gravitaionalConstentEarth": 398600.4418,
     "cartesianValues": [
-        "Xi",
-        "Xj",
-        "Xk",
-        "Yi",
-        "Yj",
-        "Yk"
+        "Ri",
+        "Rj",
+        "Rk",
+        "Vi",
+        "Vj",
+        "Vk"
     ]
 }

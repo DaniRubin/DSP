@@ -3,7 +3,7 @@ import React from 'react';
 import Config from '../config.json';
 
 const Options = props => {
-  return <div className="btn-group" style={{ width: "25%" }}>
+  return <div className="btn-group" style={{ width: "30%" }}>
     {Config.functions.map(option => {
       let classes = "";
       if (Config.functions.indexOf(option) === 0) classes += " firstButton";

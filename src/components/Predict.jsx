@@ -49,12 +49,21 @@ const Predict = props => {
   const makePrediction = () => {
     let positionAndVelocity;
     const theNewVector = {};
-    var now = new Date().getTime();
-    for (let i = 0; i < 6; i++) {
-      positionAndVelocity = predictByVector(originVector, originalTLE, now, SGP, Config);
+    let now = new Date().getTime();
+    positionAndVelocity = predictByVector(originVector, originalTLE, now, SGP, Config);
+    if (positionAndVelocity === false) return;
+    theNewVector["Original"] = positionAndVelocity;
+    for (let i = 0; i < 3; i++) {
+      let vector = { ...originVector };
+      vector[Config.cartesianValues[i]] += 100;
+      positionAndVelocity = predictByVector(vector, originalTLE, now, SGP, Config);
       if (positionAndVelocity === false) return;
-      theNewVector[`${new Date(now).toLocaleDateString()} ${new Date(now).toLocaleTimeString()}`] = positionAndVelocity;
-      now += 90 * 60 * 1000;
+      theNewVector[`${Config.cartesianValues[i]} + 100`] = positionAndVelocity;
+      vector = { ...originVector };
+      vector[Config.cartesianValues[i]] -= 100;
+      positionAndVelocity = predictByVector(vector, originalTLE, now, SGP, Config);
+      if (positionAndVelocity === false) return;
+      theNewVector[`${Config.cartesianValues[i]} - 100`] = positionAndVelocity;
     }
     setNewVector(theNewVector);
   }

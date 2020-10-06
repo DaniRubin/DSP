@@ -332,9 +332,17 @@ table {
   display: none;
 }
 
-
-
-
+.MuiAccordionDetails-root {
+  display: block !important;
+  background-color: #f0f0f0;
+}
+.MuiAccordionSummary-root {
+  background-color: #b0b0b0 !important;
+}
+.MuiAccordion-root{
+  margin:auto !important;
+  width:90% !important;
+}
 
 
 

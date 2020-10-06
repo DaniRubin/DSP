@@ -6,6 +6,12 @@ import ThreeSixtyIcon from '@material-ui/icons/ThreeSixty';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FindReplaceIcon from '@material-ui/icons/FindReplace';
 
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import Vector from './results/Vector';
 import Config from '../config.json';
 import { predictByVector, getPointByTLE } from './js/sgp4';
@@ -62,7 +68,6 @@ const Predict = props => {
       <textarea id="TLEgenrator" rows="2" placeholder="insert your TLE here" value={originalTLE} onChange={handleTextareaChange} />
     </div>
     <Vector Config={Config.cartesianValues} paragraph={"origin point"} newVec={originVector} disabled={false} changeValue={changeValueOrigin} />
-    {/* <Vector Config={Config.cartesianValues} paragraph={"destination point"} newVec={destVector} disabled={false} changeValue={changeValueDest} /> */}
     <br /><br />
 
     <Fab variant="extended" onClick={() => getU0(setOriginVector)} style={{ marginRight: "10px" }}>
@@ -85,9 +90,16 @@ const Predict = props => {
     <br /><br />
 
 
-    {newVec && Object.keys(newVec).map(string => {
-      return <Vector Config={Config.cartesianValues} paragraph={`${string} : ${getOclidianDestance(newVec[string], originVector)} `} newVec={newVec[string]} disabled={true} />
-    })}
+    {newVec && <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography>All 10 estimated measurments</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        {Object.keys(newVec).map(string => {
+          return <Vector Config={Config.cartesianValues} paragraph={`${string} : ${getOclidianDestance(newVec[string], originVector)} `} newVec={newVec[string]} disabled={true} />
+        })}
+      </AccordionDetails>
+    </Accordion>}
 
     <br /><br />
 

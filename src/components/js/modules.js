@@ -18,3 +18,17 @@ exports.genrateRandom = () => {
   }
   return newVector;
 }
+
+exports.getOclidianDestance = (v1, v2) => {
+  console.log(v1);
+  console.log(v2);
+  console.log(v1["Ri"]);
+  console.log((v1["Ri"] - v2["Ri"]) * (v1["Ri"] - v2["Ri"]));
+
+  const ans = Math.sqrt(
+    Math.pow(v1["Ri"] - v2["Ri"], 2) +
+    Math.pow(v1["Rj"] - v2["Rj"], 2) +
+    Math.pow(v1["Rk"] - v2["Rk"], 2)
+  );
+  return ans;
+}

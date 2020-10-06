@@ -1,9 +1,16 @@
 exports.predictByVector = (vector, tle, time, SGP, Config) => {
     const TLEsecondLine = this.convertCartesianToKepler(vector, Config, tle.split('\n')[1].split(' ')[1]);
     const allTLE = tle.split('\n')[0] + '\n' + TLEsecondLine;
-    const issSatRec = SGP.twoline2rv(allTLE.split('\n')[0], allTLE.split('\n')[1], SGP.wgs84());
+    return this.getPointByTLE(allTLE, time, SGP);
+};
+
+exports.getPointByTLE = (tle, time, SGP) => {
+    const issSatRec = SGP.twoline2rv(tle.split('\n')[0], tle.split('\n')[1], SGP.wgs84());
+    console.log(issSatRec)
     time = new Date(time);
+    console.log(time);
     const positionAndVelocity = SGP.propogate(issSatRec, time.getUTCFullYear(), time.getUTCMonth() + 1, time.getUTCDate(), time.getUTCHours(), time.getUTCMinutes(), time.getUTCSeconds());
+    console.log(positionAndVelocity)
     if (positionAndVelocity[0] !== false) {
         const newVector = {
             "Ri": positionAndVelocity.position.x,
@@ -18,7 +25,8 @@ exports.predictByVector = (vector, tle, time, SGP, Config) => {
         alert("Failed");
         return false;
     }
-};
+}
+
 
 exports.convertCartesianToKepler = (vector, Config, catalogNumber) => {
     // const Rvector = [6524.834, 6862.875, 6448.296];

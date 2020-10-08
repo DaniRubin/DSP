@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SGP from 'sgp4';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import Fab from '@material-ui/core/Fab';
 import ThreeSixtyIcon from '@material-ui/icons/ThreeSixty';
@@ -16,14 +17,17 @@ import Vector from './results/Vector';
 import Config from '../config.json';
 import { predictByVector, getPointByTLE } from './js/sgp4';
 import { genrateRandom, getOclidianDestance } from './js/modules';
+import { predictionFunction } from './js/prediction';
 
 const STEP_NUMBER = 100;
 
 const Predict = props => {
   const [originVector, setOriginVector] = useState({});
-  const [originalTLE, setTLEoriginal] = useState("1 72001C 20070B   20280.52157813  .00584889  00000-0  97456-3 0    02\n2 72001  53.0030  84.7370 0013258 321.4366 301.2507 16.01836729    18");
-  const [newTLE, setTLEgenrated] = useState("");
+  const [originalTLE, setTLEoriginal] = useState("1 46396U 20064A   20280.85752458  .00071660  29309-5  33210-3 0  9996\n2 46396  97.3320  32.8740 0314098  65.7824  84.8996 15.36902289  4547");
   const [newVec, setNewVector] = useState(null);
+  const [algorithemOutput, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const handleTextareaChange = (event) => {
     setTLEoriginal(event.target.value)
@@ -34,31 +38,33 @@ const Predict = props => {
     setNewVector(null);
   }
 
-  // const handleGenrateRandom = (myFunc) => {
-  //   const newVector = genrateRandom();
-  //   myFunc(newVector);
-  //   setNewVector(null);
-  // }
   const changeValueOrigin = (event, label) => {
     const newVector = { ...originVector };
     newVector[label] = event.target.value;
     console.log(newVector)
     setOriginVector(newVector);
   }
+  const callPrediction = () => {
+    setLoading(true);
+    setTimeout(function () {
+      predictionFunction(originVector, newVec, originalTLE, setOutput, SGP, predictByVector, Config);
+    }, 2000);
+  }
   const clearVector = () => {
-    setTLEgenrated("");
     setOriginVector({});
-    setNewVector({});
+    setOutput("");
+    setNewVector(null);
+    setLoading(false);
   }
   const makePrediction = () => {
     let positionAndVelocity;
     const theNewVector = {};
     let now = new Date().getTime();
-    for (let i = 0; i <= 10; i++) {
+    for (let i = 0; i < 10; i++) {
+      now += 90 * 60 * 1000;
       positionAndVelocity = getPointByTLE(originalTLE, now, SGP);
       if (positionAndVelocity === false) return;
-      theNewVector[`U${i} : ${new Date(now).toLocaleDateString()} ${new Date(now).toLocaleTimeString()}`] = positionAndVelocity;
-      now += 90 * 60 * 1000;
+      theNewVector[`U${i + 1} : ${new Date(now).toLocaleDateString()} ${new Date(now).toLocaleTimeString()}`] = positionAndVelocity;
     }
     setNewVector(theNewVector);
   }
@@ -78,7 +84,7 @@ const Predict = props => {
       <ThreeSixtyIcon style={{ marginRight: "10px", marginBottom: "5px" }} />
         Genrate all 10 measurments
       </Fab>
-    <Fab variant="extended" onClick={makePrediction} disabled={!(Object.keys(originVector).length !== 0)} style={{ marginRight: "10px" }}>
+    <Fab variant="extended" onClick={callPrediction} disabled={!(Object.keys(originVector).length !== 0)} style={{ marginRight: "10px" }}>
       <FindReplaceIcon style={{ marginRight: "10px", marginBottom: "5px" }} />
         Predict
       </Fab>
@@ -101,6 +107,16 @@ const Predict = props => {
       </AccordionDetails>
     </Accordion>}
 
+
+    {loading && !algorithemOutput && <div className="loader"></div>}
+
+    {algorithemOutput && <TextareaAutosize
+      class="outputTextBox"
+      rowsMax={4}
+      aria-label="maximum height"
+      placeholder="here is the output"
+      value={algorithemOutput}
+    />}
     <br /><br />
 
   </div>

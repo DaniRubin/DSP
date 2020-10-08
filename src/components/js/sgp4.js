@@ -6,11 +6,11 @@ exports.predictByVector = (vector, tle, time, SGP, Config) => {
 
 exports.getPointByTLE = (tle, time, SGP) => {
     const issSatRec = SGP.twoline2rv(tle.split('\n')[0], tle.split('\n')[1], SGP.wgs84());
-    console.log(issSatRec)
+    // console.log(tle)
     time = new Date(time);
-    console.log(time);
+    // console.log(time);
     const positionAndVelocity = SGP.propogate(issSatRec, time.getUTCFullYear(), time.getUTCMonth() + 1, time.getUTCDate(), time.getUTCHours(), time.getUTCMinutes(), time.getUTCSeconds());
-    console.log(positionAndVelocity)
+    // console.log(positionAndVelocity)
     if (positionAndVelocity[0] !== false) {
         const newVector = {
             "Ri": positionAndVelocity.position.x,
@@ -22,7 +22,7 @@ exports.getPointByTLE = (tle, time, SGP) => {
         }
         return newVector;
     } else {
-        alert("Failed");
+        // alert("Failed");
         return false;
     }
 }
@@ -37,34 +37,34 @@ exports.convertCartesianToKepler = (vector, Config, catalogNumber) => {
     const Nvector = vectoricalMultiple([0, 0, 1], Hvector);
     //inclination
     const inclination = radianToDegree(Math.acos((Hvector[2] / getMagnitudeOfMetrix(Hvector))));
-    console.log("inclination - " + inclination);
+    // console.log("inclination - " + inclination);
     //semi major axis
     const tempValue = ((Math.pow(getMagnitudeOfMetrix(Vvector), 2) / 2) - (Config.gravitaionalConstentEarth / getMagnitudeOfMetrix(Rvector)));
     const semiMajorAxis = ((-Config.gravitaionalConstentEarth) / (2 * tempValue));
-    console.log("semiMajorAxis - " + semiMajorAxis);
+    // console.log("semiMajorAxis - " + semiMajorAxis);
     //eccentricity
     const temp1 = multipleScalarAndVector(Rvector, (Math.pow(getMagnitudeOfMetrix(Vvector), 2) - (Config.gravitaionalConstentEarth / getMagnitudeOfMetrix(Rvector))));
     const temp2 = multipleScalarAndVector(Vvector, scalaricMultiple(Rvector, Vvector));
     const Evector = multipleScalarAndVector(vectoricalSubtraction(temp1, temp2), (1 / Config.gravitaionalConstentEarth));
     const eccentricity = getMagnitudeOfMetrix(Evector);
-    console.log("eccentricity - " + eccentricity);
+    // console.log("eccentricity - " + eccentricity);
     //ascendingNode
     let ascendingNode = radianToDegree(Math.acos((Nvector[0] / getMagnitudeOfMetrix(Nvector))));
     if (Nvector[1] < 0) ascendingNode = 360 - ascendingNode;
-    console.log("ascendingNode - " + ascendingNode);
+    // console.log("ascendingNode - " + ascendingNode);
     //argumantPerigee
     const temp3 = (scalaricMultiple(Nvector, Evector));
     const temp4 = getMagnitudeOfMetrix(Nvector) * getMagnitudeOfMetrix(Evector);
     let argumantPerigee = radianToDegree(Math.acos(temp3 / temp4));
     if (Evector[2] < 0) argumantPerigee = 360 - argumantPerigee;
-    console.log("argumantPerigee - " + argumantPerigee);
+    // console.log("argumantPerigee - " + argumantPerigee);
     //trueAnomaly
     const temp5 = (scalaricMultiple(Evector, Rvector));
     const temp6 = getMagnitudeOfMetrix(Evector) * getMagnitudeOfMetrix(Rvector);
     let trueAnomaly = radianToDegree(Math.acos(temp5 / temp6));
     if (scalaricMultiple(Rvector, Vvector) < 0) trueAnomaly = 360 - trueAnomaly;
     if (trueAnomaly > 180) trueAnomaly = trueAnomaly - 360;
-    console.log("trueAnomaly - " + trueAnomaly);
+    // console.log("trueAnomaly - " + trueAnomaly);
 
     // document.getElementById("backParams").style.display = "block";
     const TLEsecondLine = convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantPerigee, eccentricity, trueAnomaly, Config, catalogNumber);
@@ -105,7 +105,7 @@ function convertKeplerToTLE(semiMajorAxis, inclination, ascendingNode, argumantP
     // alert(meanAnomaly)
     // alert(trueAnomaly)
     if (trueAnomaly < 0) meanAnomaly = 360 - meanAnomaly;
-    console.log("mean anomaly - " + trueAnomaly);
+    // console.log("mean anomaly - " + trueAnomaly);
 
     TLEsecondLine += createValidAngle(meanAnomaly.toFixed(4)) + " ";
     //make meanMotion

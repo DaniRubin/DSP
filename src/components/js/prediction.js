@@ -1,16 +1,7 @@
 // const LM = require('ml-levenberg-marquardt');
 const fmin = require('fmin');
-const vectors = [
-  [0, 1, 2, 3, 4, 5],
-  [0, 1, 2, 3, 4, 6],
-  [0, 1, 2, 3, 4, 7],
-  [0, 1, 2, 3, 4, 8],
-  [0, 1, 2, 3, 4, 9],
-  [0, 1, 2, 3, 4, 10],
-  [0, 1, 2, 3, 4, 11],
-]
-exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, predictByVector, config) => {
-  const startTime = new Date().getTime();
+
+const createVectorArray = (vectorList) => {
   const vectors = []
   Object.keys(vectorList).forEach(key => {
     const elementArray = []
@@ -19,59 +10,70 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
     });
     vectors.push(elementArray);
   });
-  let log = "";
-  let globalCounter = 0
-  let failareCounter = 0
+  return vectors;
+}
+const convertVectorToObject = (vector) => {
+  return {
+    "Ri": vector[0],
+    "Rj": vector[1],
+    "Rk": vector[2],
+    "Vi": vector[3],
+    "Vj": vector[4],
+    "Vk": vector[5]
+  }
+}
+const convertObjectToVector = (obj) => {
+  const vector = []
+  Object.keys(obj).forEach(elementKey => {
+    vector.push(obj[elementKey]);
+  });
+  return vector;
+}
+const createInitialVector = (originalVector, Rdiff, Vdiff) => {
+  const initialVector = []
+  Object.keys(originalVector).forEach(key => {
+    if (key.includes('R')) {
+      const numberToAdd = Math.random() * Rdiff;
+      const ans = originalVector[key] + numberToAdd;
+      initialVector.push(ans);
+    } else {
+      const numberToAdd = Math.random() * Vdiff;
+      const ans = originalVector[key] + numberToAdd;
+      initialVector.push(ans);
+    }
+  });
+  return initialVector;
+}
+
+exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, predictByVector, config) => {
+  const startTime = new Date().getTime();
+  const vectors = createVectorArray(vectorList);
+  let log = "", globalCounter = 0, failareCounter = 0;
   function costFunction(vec) {
     let sum = 0
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < vectors.length; i++) {
       const now = startTime + ((90 * 60 * 1000) * (i + 1));
-      const vecConvention = {
-        "Ri": vec[0],
-        "Rj": vec[1],
-        "Rk": vec[2],
-        "Vi": vec[3],
-        "Vj": vec[4],
-        "Vk": vec[5]
-      }
-      // console.log(vecConvention)
+      const vecObject = convertVectorToObject(vec);
       let relevantVec;
-      console.log(now)
-      const positionAndVelocity = predictByVector(vecConvention, tle, now, SGP, config);
+      const positionAndVelocity = predictByVector(vecObject, tle, now, SGP, config);
       if (!positionAndVelocity) {
         failareCounter++;
         relevantVec = vec.slice();
       } else {
-        relevantVec = []
-        Object.keys(positionAndVelocity).forEach(elementKey => {
-          relevantVec.push(positionAndVelocity[elementKey]);
-        });
+        relevantVec = convertObjectToVector(positionAndVelocity);
       }
-      console.log(globalCounter, relevantVec);
-      for (let j = 0; j < 6; j++) {
+      for (let j = 0; j < relevantVec.length; j++) {
         sum += Math.sqrt((relevantVec[j] - vectors[i][j]) ** 2);
       }
     }
     globalCounter += 1;
     log += `${globalCounter}. cost function - ${sum} \n`;
-    return sum
+    return sum;
   }
   //Creation of the initial vector
-  let initialVector = []
-  Object.keys(originalVec).forEach(key => {
-    if (key.includes('R')) {
-      const numberToAdd = Math.random() * 500
-      const ans = originalVec[key] + numberToAdd
-      initialVector.push(ans);
-    } else {
-      const numberToAdd = Math.random() * 0.2
-      const ans = originalVec[key] + numberToAdd
-      initialVector.push(ans);
-    }
-  });
+  let initialVector = createInitialVector(originalVec, 500, 0.2);
   console.log("Original vector is - ", originalVec);
   console.log("initial vector is - ", initialVector);
-
   let solution = fmin.nelderMead(costFunction, initialVector.slice());
   // log += `Second try! ${solution.x}\n`
   // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
@@ -81,7 +83,6 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
   // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
   // log += `Fifth try! ${solution.x}\n`
   // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
-
 
   console.log();
   console.log("solution is at " + solution.x);
@@ -93,12 +94,11 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
   setOutput(log);
 
 }
+
+
+
 // const ans = this.predictionFunction(vectors);
 // console.log(ans)
-
-
-
-
 
 // const options = {
 //   damping: 1.5,

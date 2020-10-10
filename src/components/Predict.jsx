@@ -16,10 +16,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Vector from './results/Vector';
 import Config from '../config.json';
 import { predictByVector, getPointByTLE } from './js/sgp4';
-import { genrateRandom, getOclidianDestance } from './js/modules';
+import { getOclidianDestance } from './js/modules';
 import { predictionFunction } from './js/prediction';
 
-const STEP_NUMBER = 100;
 
 const Predict = props => {
   const [originVector, setOriginVector] = useState({});
@@ -102,7 +101,7 @@ const Predict = props => {
       </AccordionSummary>
       <AccordionDetails>
         {Object.keys(newVec).map(string => {
-          return <Vector Config={Config.cartesianValues} paragraph={`${string} : ${getOclidianDestance(newVec[string], originVector)} `} newVec={newVec[string]} disabled={true} />
+          return <Vector key={string} Config={Config.cartesianValues} paragraph={`${string} : ${getOclidianDestance(newVec[string], originVector)} `} newVec={newVec[string]} disabled={true} />
         })}
       </AccordionDetails>
     </Accordion>}
@@ -111,7 +110,7 @@ const Predict = props => {
     {loading && !algorithemOutput && <div className="loader"></div>}
 
     {algorithemOutput && <TextareaAutosize
-      class="outputTextBox"
+      className="outputTextBox"
       rowsMax={4}
       aria-label="maximum height"
       placeholder="here is the output"

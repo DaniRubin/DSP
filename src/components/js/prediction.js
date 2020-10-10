@@ -44,11 +44,29 @@ const createInitialVector = (originalVector, Rdiff, Vdiff) => {
   });
   return initialVector;
 }
+let log = '';
+let globalCounter = 0;
 
+const makeRunAlgorithem = (costFunction, vector, iterationNumber) => {
+  if (iterationNumber <= 0) {
+    alert("Iteration number is invalid!");
+    return null;
+  }
+  console.log(`Try number 1 globalCounter - ${globalCounter}`);
+  log += `Try number ${1}! ${vector}\n`;
+  let solution = fmin.nelderMead(costFunction, vector);
+  console.log("solution is at " + solution.x);
+  for (let i = 1; i < iterationNumber; i++) {
+    console.log(`Try number ${i + 1} globalCounter - ${globalCounter}`);
+    log += `Try number ${i + 1}! ${solution.x}\n`;
+    solution = fmin.nelderMead(costFunction, solution.x.slice());
+  }
+  return solution;
+}
 exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, predictByVector, config) => {
   const startTime = new Date().getTime();
   const vectors = createVectorArray(vectorList);
-  let log = "", globalCounter = 0, failareCounter = 0;
+  let failareCounter = 0;
   function costFunction(vec) {
     let sum = 0
     for (let i = 0; i < vectors.length; i++) {
@@ -74,18 +92,11 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
   let initialVector = createInitialVector(originalVec, 500, 0.2);
   console.log("Original vector is - ", originalVec);
   console.log("initial vector is - ", initialVector);
-  let solution = fmin.nelderMead(costFunction, initialVector.slice());
-  // log += `Second try! ${solution.x}\n`
-  // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
-  // log += `Third try! ${solution.x}\n`
-  // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
-  // log += `Forth try! ${solution.x}\n`
-  // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
-  // log += `Fifth try! ${solution.x}\n`
-  // solution = fmin.conjugateGradient(costFunction, solution.x.slice());
 
-  console.log();
-  console.log("solution is at " + solution.x);
+  // let solution = fmin.nelderMead(costFunction, initialVector.slice());
+  const solution = makeRunAlgorithem(costFunction, initialVector.slice(), 1);
+
+  console.log('\n\n');
   log = `steps -   ${globalCounter}\n\n\n\n${log}`;
   log = `Fail rate -  -   ${failareCounter / (globalCounter * 10)}\n${log}`;
   log = `Fails -   ${failareCounter}\n${log}`;

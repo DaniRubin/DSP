@@ -6,6 +6,7 @@ const Vector = (props) => {
     <p className="runLabel">{props.paragraph}</p>
     {props.Config.map(label =>
       <TextField
+        key={label}
         error={isNaN(props.newVec[label]) && props.newVec[label] !== undefined}
         label={label}
         variant="outlined"

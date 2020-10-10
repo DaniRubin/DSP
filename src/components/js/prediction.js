@@ -1,4 +1,3 @@
-// const LM = require('ml-levenberg-marquardt');
 const fmin = require('fmin');
 
 const createVectorArray = (vectorList) => {
@@ -93,7 +92,6 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
   console.log("Original vector is - ", originalVec);
   console.log("initial vector is - ", initialVector);
 
-  // let solution = fmin.nelderMead(costFunction, initialVector.slice());
   const solution = makeRunAlgorithem(costFunction, initialVector.slice(), 1);
 
   console.log('\n\n');
@@ -103,10 +101,10 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
   log = `solution is at  ${solution.x}\n\n${log}`;
   log = `initial was at  ${initialVector}\n\n${log}`;
   setOutput(log);
-
 }
 
 
+// const LM = require('ml-levenberg-marquardt');
 
 // const ans = this.predictionFunction(vectors);
 // console.log(ans)

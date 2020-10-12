@@ -1,4 +1,6 @@
 const fmin = require('fmin');
+const LM = require('ml-levenberg-marquardt');
+var nr = require('newton-raphson-method');
 
 const createVectorArray = (vectorList) => {
   const vectors = []
@@ -60,13 +62,15 @@ const makeRunAlgorithem = (costFunction, vector, iterationNumber) => {
     log += `Try number ${i + 1}! ${solution.x}\n`;
     solution = fmin.nelderMead(costFunction, solution.x.slice());
   }
-  return solution;
+  return solution.x;
 }
+
 exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, predictByVector, config) => {
   const startTime = new Date().getTime();
   const vectors = createVectorArray(vectorList);
   let failareCounter = 0;
   function costFunction(vec) {
+    console.log(vec)
     let sum = 0
     for (let i = 0; i < vectors.length; i++) {
       const now = startTime + ((90 * 60 * 1000) * (i + 1));
@@ -87,7 +91,6 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
     log += `${globalCounter}. cost function - ${sum} \n`;
     return sum;
   }
-  //Creation of the initial vector
   let initialVector = createInitialVector(originalVec, 500, 0.2);
   console.log("Original vector is - ", originalVec);
   console.log("initial vector is - ", initialVector);
@@ -98,24 +101,7 @@ exports.predictionFunction = (originalVec, vectorList, tle, setOutput, SGP, pred
   log = `steps -   ${globalCounter}\n\n\n\n${log}`;
   log = `Fail rate -  -   ${failareCounter / (globalCounter * 10)}\n${log}`;
   log = `Fails -   ${failareCounter}\n${log}`;
-  log = `solution is at  ${solution.x}\n\n${log}`;
+  log = `solution is at  ${solution}\n\n${log}`;
   log = `initial was at  ${initialVector}\n\n${log}`;
   setOutput(log);
 }
-
-
-// const LM = require('ml-levenberg-marquardt');
-
-// const ans = this.predictionFunction(vectors);
-// console.log(ans)
-
-// const options = {
-//   damping: 1.5,
-//   initialValues: initialVector,
-//   gradientDifference: 10e-2,
-//   maxIterations: 1000,
-//   errorTolerance: 10e-3
-// };
-
-// let fittedParams = LM(allVectors, costFunction, options);
-// // console.log(fittedParams)

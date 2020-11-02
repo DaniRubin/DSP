@@ -1,9 +1,12 @@
 import numpy as np
 from scipy.optimize import minimize
 
+globalSum = 0
 def cost_func(vec):
+    global globalSum 
     sum = np.sum((vec-np.array([1,2,3,4,5,6]))**2)
-    print(sum)
+    globalSum +=1
+    print(globalSum , ". - ",sum)
     return sum
 
 

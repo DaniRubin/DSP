@@ -9,6 +9,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "fmin": "0.0.2",
+    "ml-levenberg-marquardt": "^2.1.1",
     "newton-raphson-method": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

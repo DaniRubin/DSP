@@ -1,6 +1,7 @@
 const fmin = require('fmin');
-const LM = require('ml-levenberg-marquardt');
-var nr = require('newton-raphson-method');
+const LM = require('ml-levenberg-marquardt').default;
+
+// var nr = require('newton-raphson-method');
 
 const createVectorArray = (vectorList) => {
   const vectors = []
@@ -49,6 +50,16 @@ let log = '';
 let globalCounter = 0;
 
 const makeRunAlgorithem = (costFunction, vector, iterationNumber) => {
+  // const options = {
+  //   damping: 1.5,
+  //   initialValues: vector,
+  //   gradientDifference: 10e-2,
+  //   maxIterations: 100,
+  //   errorTolerance: 10e-3
+  // };
+  // const solution = LM(null, costFunction, options);
+  // alert(solution)
+  // console.log(solution)
   if (iterationNumber <= 0) {
     alert("Iteration number is invalid!");
     return null;

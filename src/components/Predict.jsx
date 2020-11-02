@@ -61,7 +61,8 @@ const Predict = props => {
     let now = new Date().getTime();
     for (let i = 0; i < 10; i++) {
       now += 90 * 60 * 1000;
-      positionAndVelocity = getPointByTLE(originalTLE, now, SGP);
+      // positionAndVelocity = getPointByTLE(originalTLE, now, SGP);
+      positionAndVelocity = predictByVector({ ...originVector }, originalTLE, now, SGP, Config)
       if (positionAndVelocity === false) return;
       theNewVector[`U${i + 1} : ${new Date(now).toLocaleDateString()} ${new Date(now).toLocaleTimeString()}`] = positionAndVelocity;
     }

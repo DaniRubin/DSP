@@ -87,9 +87,9 @@ def Kepler_to_TLE(kepler, Config, catalogNumber):
     return TLESecondLine
 
 
-def TLE_to_RV(tle, timeDiff, now):
-    satellite = Satrec.twoline2rv(tle.split('\n')[0], tle.split('\n')[1])
-    jd, fr = getThis_JD_FR(now, timeDiff)
+def TLE_to_RV(TLE, time_delta, current_time):
+    satellite = Satrec.twoline2rv(TLE.split('\n')[0], TLE.split('\n')[1])
+    jd, fr = getThis_JD_FR(current_time, time_delta)
     e, r, v = satellite.sgp4(jd, fr)
     newVector = False
     if e == 0:

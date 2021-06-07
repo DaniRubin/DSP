@@ -41,21 +41,7 @@ if __name__ == '__main__':
     ########################## Data Propogation ###################################
     ###############################################################################
     # Create correct vectors
-    NUMBER_OF_SAMPLES = 240
-    TIME_BETWEEN_SAMPLE = 60
-    propagated_vectors = create_target_points(initial_vector=target_point, TLE=ORIGIN_TLE, cycles_number=NUMBER_OF_SAMPLES,
-                                           minutes_between_cycles=TIME_BETWEEN_SAMPLE, initial_time=NOW_TIME)
-
-    propagated_vectors_kepler = [RV_to_kepler(vec) for vec in propagated_vectors]
-    fig, ax = plt.subplots(6, figsize=(30, 20))
-    TITLES = list(propagated_vectors_kepler[0].keys())
-    TITLES.remove('PSemiMajorAxis')
-
-    for i in range(len(TITLES)):
-        print(i, TITLES[i])
-        ax[i].scatter(x=[i for i in range(NUMBER_OF_SAMPLES)], y=[d[TITLES[i]] for d in propagated_vectors_kepler])
-        ax[i].title.set_text(f"{TITLES[i]} data")
-    plt.show()
+    propagate_kepler(target_point, ORIGIN_TLE, samples_amount=240, time_delta=60, initial_time=NOW_TIME)
 
     ###############################################################################
     ############################ Data plotting ####################################

@@ -87,3 +87,19 @@ def plot_penalty(target_point, tle, time, index, SINGLE_GRAPH=True):
             ax[i].title.set_text(f"{TITLES[i]} data")
 
     plt.show()
+
+
+def propagate_kepler(initial_vector, TLE, samples_amount, time_delta, initial_time):
+    propagated_vectors = create_target_points(initial_vector=initial_vector, TLE=TLE, cycles_number=samples_amount,
+                                           minutes_between_cycles=time_delta, initial_time=initial_time)
+    propagated_vectors_kepler = [RV_to_kepler(vec) for vec in propagated_vectors]
+    fig, ax = plt.subplots(6, figsize=(30, 20))
+    TITLES = list(propagated_vectors_kepler[0].keys())
+    TITLES.remove('PSemiMajorAxis')
+
+    for i in range(len(TITLES)):
+        print(i, TITLES[i])
+        ax[i].scatter(x=[i for i in range(samples_amount)], y=[d[TITLES[i]] for d in propagated_vectors_kepler])
+        ax[i].title.set_text(f"{TITLES[i]} data")
+    plt.show()
+

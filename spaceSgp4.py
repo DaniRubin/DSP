@@ -4,7 +4,7 @@ from sgp4.api import Satrec
 CONFIG = {"GravityConstantEarth": 398600.4418}
 
 
-def RV_to_kepler(vector, Config):
+def RV_to_kepler(vector, Config=CONFIG):
     R_vector = [vector[0], vector[1], vector[2]]
     V_vector = [vector[3], vector[4], vector[5]]
     H_vector = vectorMultiple(R_vector, V_vector)

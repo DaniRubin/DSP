@@ -41,6 +41,11 @@ def remove_unwanted(correct_vectors, penalty):
     penalty = list(map(lambda x: x if not 1400<int(x)<1600 and not unwanted_answer-100<int(x)<unwanted_answer+100 else -50000, penalty))
     return penalty
 
+def print_statistics(penalty, my_range):
+    print("Minimal value is - ", min(penalty))
+    for u in range(-1 * my_range, my_range):
+        print(u, penalty[u + my_range])
+
 def calculae_panelty(index, number_of_plots, target_point, tle, time_delta, current_time, correct_vectors, my_range):
     penalty = []
     direction_change = np.zeros(6)
@@ -58,26 +63,19 @@ def calculae_panelty(index, number_of_plots, target_point, tle, time_delta, curr
         penalty.append(np.average(new_array))
     return penalty
 
-def print_statistics(penalty, my_range):
-    print("Minimal value is - ", min(penalty))
-    for u in range(-1 * my_range, my_range):
-        print(u, penalty[u + my_range])
-
-
-def plot_penalty(target_point, tle, time):
+def plot_penalty(target_point, tle, time, index, SINGLE_GRAPH=True):
     TITLES = ["X", "Y", "Z", "Vx", "Vy", "Vz"]
     my_range = 200
     number_of_plots = 10
-    minutes_delta = 60
-    index = 5
-    SINGLE_GRAPH = True
+    minutes_delta = 1
+
     correct_vectors = create_target_points(initial_vector=target_point, TLE=tle, cycles_number=number_of_plots,
                                            minutes_between_cycles=minutes_delta, initial_time=time)
-    penalty = calculae_panelty(index, number_of_plots, target_point, tle, minutes_delta, time, correct_vectors,
-                               my_range)
-    print_statistics(penalty, my_range)
 
     if SINGLE_GRAPH:
+        penalty = calculae_panelty(index, number_of_plots, target_point, tle, minutes_delta, time, correct_vectors,
+                                   my_range)
+        print_statistics(penalty, my_range)
         plt.scatter(x=[i for i in range(-1 * my_range, my_range)], y=penalty)
         plt.title(TITLES[index])
     else:

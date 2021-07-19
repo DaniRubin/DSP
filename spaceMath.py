@@ -10,7 +10,8 @@ def vectorMultiple(mat1, mat2):
     ]
 
 def getMagnitudeOfMatrix(mat):
-    return math.sqrt((math.pow(mat[0], 2) + math.pow(mat[1], 2) + math.pow(mat[2], 2)))
+    # print(mat)
+    return math.sqrt((math.pow(mat[0], 2) + math.pow(mat[1], 2) + math.pow(mat[2], 2))) #or 0.01
 
 def degreeToRadians(degree):
     return degree / 57.2958

@@ -9,6 +9,9 @@ def RV_to_kepler(vector, Config=CONFIG):
     V_vector = [vector[3], vector[4], vector[5]]
     H_vector = vectorMultiple(R_vector, V_vector)
     N_vector = vectorMultiple([0, 0, 1], H_vector)
+    print(R_vector)
+    print(V_vector)
+    print(H_vector)
     inclination = radianToDegree(math.acos((H_vector[2] / getMagnitudeOfMatrix(H_vector))))
     tempValue = ((math.pow(getMagnitudeOfMatrix(V_vector), 2) / 2) - (
             Config.get('GravityConstantEarth') / getMagnitudeOfMatrix(R_vector)))

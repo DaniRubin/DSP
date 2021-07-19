@@ -41,8 +41,21 @@ if __name__ == '__main__':
     ########################## Data Propogation ###################################
     ###############################################################################
     # Create correct vectors
-    propagate_kepler(target_point, ORIGIN_TLE, samples_amount=240, time_delta=60, initial_time=NOW_TIME)
+    temp_target_point = target_point.copy()
+    move_by = -390.2
+    index = 2
+    # index 0 move_by ===>  -172.8 < index < 5258
+    # index 1 move_by ===>  -194.8 < index < 6357
+    # index 2 move_by ===>  -390.2 < index < 398
+    # index 3 move_by ===>  -0.0444 < index < 0.0707
+    # index 4 move_by ===>  -0.0495 < index < 0.0765
+    # index 5 move_by ===>  -0.0216 < index < 0.0220
 
+    target_point[index] = target_point[index] + move_by
+    propagate_kepler(target_point, ORIGIN_TLE, samples_amount=1440, time_delta=1, initial_time=NOW_TIME,
+                     title_addition=f"and initial vector move of {move_by}")
+    print(temp_target_point)
+    print(target_point)
     ###############################################################################
     ############################ Data plotting ####################################
     ###############################################################################

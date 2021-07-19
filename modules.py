@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 def create_target_points(initial_vector, TLE, cycles_number, minutes_between_cycles, initial_time):
     correct_vectors = []
     for x in range(cycles_number):
+        # print(f'Creating  vector number {x}')
         correct_vectors.append(
             np.array(RV_to_RV(initial_vector, TLE, minutes_between_cycles * (x + 1), initial_time)))
     return correct_vectors
@@ -89,17 +90,28 @@ def plot_penalty(target_point, tle, time, index, SINGLE_GRAPH=True):
     plt.show()
 
 
-def propagate_kepler(initial_vector, TLE, samples_amount, time_delta, initial_time):
+def propagate_kepler(initial_vector, TLE, samples_amount, time_delta, initial_time, title_addition=''):
     propagated_vectors = create_target_points(initial_vector=initial_vector, TLE=TLE, cycles_number=samples_amount,
                                            minutes_between_cycles=time_delta, initial_time=initial_time)
-    propagated_vectors_kepler = [RV_to_kepler(vec) for vec in propagated_vectors]
+
+    propagated_vectors_kepler = []
+    success_samples_amount = 0
+    try:
+        for vec in propagated_vectors:
+            propagated_vectors_kepler.append(RV_to_kepler(vec))
+            success_samples_amount += 1
+    except:
+        print(f"Stoped at counter {success_samples_amount}")
+    # propagated_vectors_kepler = [RV_to_kepler(vec) for vec in propagated_vectors]
     fig, ax = plt.subplots(6, figsize=(30, 20))
+    fig.suptitle(f'Kepler propagation with {time_delta} minutes and {success_samples_amount}/{samples_amount} successful samples {title_addition}')
+
     TITLES = list(propagated_vectors_kepler[0].keys())
     TITLES.remove('PSemiMajorAxis')
 
     for i in range(len(TITLES)):
         print(i, TITLES[i])
-        ax[i].scatter(x=[i for i in range(samples_amount)], y=[d[TITLES[i]] for d in propagated_vectors_kepler])
+        ax[i].scatter(x=[i for i in range(success_samples_amount)], y=[d[TITLES[i]] for d in propagated_vectors_kepler])
         ax[i].title.set_text(f"{TITLES[i]} data")
     plt.show()
 

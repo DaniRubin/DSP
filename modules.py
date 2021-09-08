@@ -89,7 +89,6 @@ def plot_penalty(target_point, tle, time, index, SINGLE_GRAPH=True):
 
     plt.show()
 
-
 def propagate_kepler(initial_vector, TLE, samples_amount, time_delta, initial_time, title_addition=''):
     propagated_vectors = create_target_points(initial_vector=initial_vector, TLE=TLE, cycles_number=samples_amount,
                                            minutes_between_cycles=time_delta, initial_time=initial_time)

@@ -114,3 +114,9 @@ def propagate_kepler(initial_vector, TLE, samples_amount, time_delta, initial_ti
         ax[i].title.set_text(f"{TITLES[i]} data")
     plt.show()
 
+
+def increateVelocity(vec):
+    return np.array([vec[0], vec[1], vec[2], vec[3] * 1000, vec[4] * 1000, vec[5] * 1000])
+
+def decreaseVelocity(vec):
+    return np.array([vec[0], vec[1], vec[2], vec[3] / 1000, vec[4] / 1000, vec[5] / 1000])

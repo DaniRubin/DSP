@@ -4,72 +4,27 @@
 from datetime import datetime
 from scipy.optimize import least_squares
 from modules import *
+from optimization import *
 
 global_counter = 0
 fail_counter = 0
 NOW_TIME = datetime(2020, 9, 3)
+
+# TLE
 ORIGIN_TLE = '1 41771U 16058B   20247.00000000  .00003819  00000-0  10347-3 0  9990\n2 41771  97.1931  41.8590 ' \
              '0002406  85.0989 275.0531 15.38249595234081 '
 
+# Create RV vector from TLE
+target_point = TLE_to_RV(TLE=ORIGIN_TLE, time_delta=0, current_time=NOW_TIME)
 
-def increateVelocity(vec):
-    return np.array([vec[0], vec[1], vec[2], vec[3] * 1000, vec[4] * 1000, vec[5] * 1000])
+# Create correct vectors
+correct_vectors = create_target_points(initial_vector=target_point, TLE=ORIGIN_TLE, cycles_number=10,
+                                       minutes_between_cycles=10, initial_time=NOW_TIME)
 
-
-def decreaseVelocity(vec):
-    return np.array([vec[0], vec[1], vec[2], vec[3] / 1000, vec[4] / 1000, vec[5] / 1000])
-
-
-def optimizationFunction(vec):
-    global global_counter
-    global fail_counter
-    # print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in vec]}")
-    newVectors = create_target_points(initial_vector=decreaseVelocity(vec), TLE=ORIGIN_TLE,
-                                      cycles_number=10, minutes_between_cycles=10, initial_time=NOW_TIME)
-    answers = []
-    for index in range(len(newVectors)):
-        if np.array_equal(newVectors[index], np.zeros(6)):
-            fail_counter += 1
-        answers.append(np.linalg.norm(
-            increateVelocity(newVectors[index]) - increateVelocity(correct_vectors[index])))
-    global_counter += 1
-    # print(f"{global_counter}. - {np.array(answers).astype(int)}. Fails - {fail_counter}")
-    print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in answers]}")
-    return np.array(answers)
-
-
-INDEX = 2
-
-
-def optimizationFunctionPartOne(vec):
-    global global_counter
-    global fail_counter
-    # print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in vec]}")
-
-    newVec = target_point.copy()
-    newVec[INDEX] = vec[0]
-
-    newVectors = create_target_points(initial_vector=newVec, TLE=ORIGIN_TLE,
-                                      cycles_number=10, minutes_between_cycles=10, initial_time=NOW_TIME)
-    answers = []
-    for index in range(len(newVectors)):
-        if np.array_equal(newVectors[index], np.zeros(6)):
-            fail_counter += 1
-        answers.append(np.linalg.norm(
-            increateVelocity(newVectors[index]) - increateVelocity(correct_vectors[index])))
-    global_counter += 1
-    # print(f"{global_counter}. - {np.array(answers).astype(int)}. Fails - {fail_counter}")
-    print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in answers]}")
-    return np.array(answers)
+INDEX = 0
 
 
 if __name__ == '__main__':
-    # Create RV vector from TLE
-    target_point = TLE_to_RV(TLE=ORIGIN_TLE, time_delta=0, current_time=NOW_TIME)
-
-    # Create correct vectors
-    correct_vectors = create_target_points(initial_vector=target_point, TLE=ORIGIN_TLE, cycles_number=10,
-                                           minutes_between_cycles=10, initial_time=NOW_TIME)
     # Creates initial point
     initial_guess = create_initial_point(origin_vector=target_point, r_diff=1000, v_diff=0)
 

@@ -12,29 +12,66 @@ ORIGIN_TLE = '1 41771U 16058B   20247.00000000  .00003819  00000-0  10347-3 0  9
              '0002406  85.0989 275.0531 15.38249595234081 '
 
 
+def increateVelocity(vec):
+    return np.array([vec[0], vec[1], vec[2], vec[3] * 1000, vec[4] * 1000, vec[5] * 1000])
+
+
+def decreaseVelocity(vec):
+    return np.array([vec[0], vec[1], vec[2], vec[3] / 1000, vec[4] / 1000, vec[5] / 1000])
+
+
 def optimizationFunction(vec):
     global global_counter
     global fail_counter
-    print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in vec]}")
-    newVectors = create_target_points(initial_vector=vec, TLE=ORIGIN_TLE, cycles_number=10, minutes_between_cycles=1, initial_time=NOW_TIME)
+    # print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in vec]}")
+    newVectors = create_target_points(initial_vector=decreaseVelocity(vec), TLE=ORIGIN_TLE,
+                                      cycles_number=10, minutes_between_cycles=10, initial_time=NOW_TIME)
     answers = []
     for index in range(len(newVectors)):
         if np.array_equal(newVectors[index], np.zeros(6)):
             fail_counter += 1
-        answers.append(np.linalg.norm(newVectors[index][0:3] - correct_vectors[index][0:3]))
+        answers.append(np.linalg.norm(
+            increateVelocity(newVectors[index]) - increateVelocity(correct_vectors[index])))
     global_counter += 1
     # print(f"{global_counter}. - {np.array(answers).astype(int)}. Fails - {fail_counter}")
+    print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in answers]}")
+    return np.array(answers)
+
+
+INDEX = 2
+
+
+def optimizationFunctionPartOne(vec):
+    global global_counter
+    global fail_counter
+    # print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in vec]}")
+
+    newVec = target_point.copy()
+    newVec[INDEX] = vec[0]
+
+    newVectors = create_target_points(initial_vector=newVec, TLE=ORIGIN_TLE,
+                                      cycles_number=10, minutes_between_cycles=10, initial_time=NOW_TIME)
+    answers = []
+    for index in range(len(newVectors)):
+        if np.array_equal(newVectors[index], np.zeros(6)):
+            fail_counter += 1
+        answers.append(np.linalg.norm(
+            increateVelocity(newVectors[index]) - increateVelocity(correct_vectors[index])))
+    global_counter += 1
+    # print(f"{global_counter}. - {np.array(answers).astype(int)}. Fails - {fail_counter}")
+    print(f"{global_counter}. {[float('{:.4f}'.format(a)) for a in answers]}")
     return np.array(answers)
 
 
 if __name__ == '__main__':
     # Create RV vector from TLE
     target_point = TLE_to_RV(TLE=ORIGIN_TLE, time_delta=0, current_time=NOW_TIME)
+
     # Create correct vectors
     correct_vectors = create_target_points(initial_vector=target_point, TLE=ORIGIN_TLE, cycles_number=10,
-                                           minutes_between_cycles=1, initial_time=NOW_TIME)
-    # Creates inital point
-    initial_guess = create_initial_point(origin_vector=target_point, r_diff=100, v_diff=0.005)
+                                           minutes_between_cycles=10, initial_time=NOW_TIME)
+    # Creates initial point
+    initial_guess = create_initial_point(origin_vector=target_point, r_diff=1000, v_diff=0)
 
     format_real_vectors = [[float('{:.4f}'.format(a)) for a in vec] for vec in correct_vectors]
 
@@ -42,7 +79,7 @@ if __name__ == '__main__':
     ############################ Data Locating ####################################
     ###############################################################################
     # Create correct vectors
-    DATA_LOCATING = True
+    DATA_LOCATING = False
     if (DATA_LOCATING):
         correct_vectors = create_target_points(initial_vector=target_point, TLE=ORIGIN_TLE, cycles_number=1440,
                                                minutes_between_cycles=2, initial_time=NOW_TIME)
@@ -64,12 +101,12 @@ if __name__ == '__main__':
     ###############################################################################
     # Create correct vectors
     DATA_PROPAGATION = False
-    if(DATA_PROPAGATION):
+    if (DATA_PROPAGATION):
         # Create correct vectors
         correct_vectors = create_target_points(initial_vector=target_point, TLE=ORIGIN_TLE, cycles_number=200,
-                                           minutes_between_cycles=1, initial_time=NOW_TIME)
+                                               minutes_between_cycles=1, initial_time=NOW_TIME)
         temp_target_point = target_point.copy()
-        move_by = -390.2
+        move_by = -190.2
         index = 2
         # index 0 move_by ===>  -172.8 < index < 5258
         # index 1 move_by ===>  -194.8 < index < 6357
@@ -97,16 +134,39 @@ if __name__ == '__main__':
     OPTIMIZE = False
     if OPTIMIZE:
         # initial_guess = target_point.copy()
-        # index = 0
-        # move_by = 250
+        # index = 2
+        # move_by = 100
         # initial_guess[index] = initial_guess[index] + move_by
 
-        res = least_squares(fun=optimizationFunction, x0=np.array(initial_guess), diff_step=1, method='lm')
+        # res = least_squares(fun=optimizationFunction, x0=increateVelocity(np.array(initial_guess)), f_scale=0.1,
+        #                     method='lm')
+        diff = 800
+        res = least_squares(fun=optimizationFunctionPartOne, x0=np.array((target_point[INDEX] + diff)),
+                            method='lm')
         print("targetPoint")
         print(target_point)
-        print("initialGuess")
-        print(initial_guess)
+        # print("initialGuess")
+        # print(initial_guess)
+        print("Initial guess")
+        print(np.array((target_point[INDEX] + diff)))
+
         final_answer = [x for x in res.x]
         print("finalAnswer")
         print(final_answer)
         # print(res)
+
+    ###############################################################################
+    ####################### OPTIMIZER ONE ELEMENT #################################
+    ###############################################################################
+    # Optimization for only one parameter
+    if True:
+        finalAnswers = {}
+        successCounter = 0
+        for i in range(-20, 20):
+            res = least_squares(fun=optimizationFunctionPartOne, x0=np.array((target_point[INDEX] + i * 50)),
+                                method='lm')
+            finalAnswers[i * 50] = res.x
+            if abs(res.x - target_point[INDEX]) < 100:
+                successCounter += 1
+        print(finalAnswers)
+        print("Success counter is - ", successCounter)
